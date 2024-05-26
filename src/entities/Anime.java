@@ -1,5 +1,6 @@
 package entities;
 
+
 public class Anime {
   private String nome;
   private String tipo;

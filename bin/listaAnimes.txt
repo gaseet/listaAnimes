@@ -1,3 +1,1 @@
-nome: teste1; tipo: acao; avaliação: 10
-nome: teste2; tipo: acao; avaliação: 10
-nome: teste3; tipo: 1; avaliação: 1
+nome: teste123; tipo: 123; avaliação: 10

@@ -7,6 +7,11 @@ import entities.Anime;
 public class animeController {
     private static Scanner leitor = new Scanner(System.in);
 
+    private static boolean animeExistsInMasterList(String nomeAnime) {
+        String masterFileName = "listaAnimes.txt";
+        return animeExists(nomeAnime, masterFileName);
+    }    
+
     private static boolean animeExists(String nomeAnime, String nomeArquivo) {
         try (BufferedReader br = new BufferedReader(new FileReader(nomeArquivo))) {
             String linha;
@@ -22,6 +27,10 @@ public class animeController {
     }
 
     public static void escreverEmArquivo(Anime anime, String nomeArquivo) {
+        if (!nomeArquivo.equals("listaAnimes.txt") && !animeExistsInMasterList(anime.getNome())) {
+            System.out.println("Anime não encontrado na lista principal. Adição não permitida.");
+            return;
+        }
         if (animeExists(anime.getNome(), nomeArquivo)) {
             System.out.println("Anime já existe no arquivo.");
             return;
@@ -36,7 +45,7 @@ public class animeController {
         } catch (IOException e) {
             System.err.println("Erro ao escrever no arquivo: " + e.getMessage());
         }
-    }
+    }    
 
     public static void deletarAnime(String nomeArquivo, String nomeAnime) {
         try {
@@ -87,14 +96,14 @@ public class animeController {
     public static void registrarAnimes(Anime anime) {
         System.out.println("Informe o nome do anime:");
         String nome = leitor.nextLine();
-    
+
         System.out.println("Informe o tipo do anime:");
         String tipo = leitor.nextLine();
-    
+
         System.out.println("Informe a avaliação do anime (entre 0 e 10):");
         int avaliacao = leitor.nextInt();
         leitor.nextLine(); // Consumir a nova linha
-    
+
         anime.setNome(nome);
         anime.setTipo(tipo);
         anime.setAvaliacao(avaliacao);
@@ -109,24 +118,29 @@ public class animeController {
             String linha;
             StringBuilder novoConteudo = new StringBuilder();
             boolean encontrado = false;
-    
+
             while ((linha = br.readLine()) != null) {
                 if (linha.contains("nome: " + nomeAnime + ";")) {
                     encontrado = true;
-    
+
                     System.out.println("Anime encontrado. Informe os novos dados.");
-    
+
                     System.out.println("Informe o novo nome do anime:");
                     String novoNome = leitor.nextLine();
-                    if (animeExists(novoNome, nomeArquivo) && !novoNome.equals(nomeAnime)) {
+
+                    if (!animeExistsInMasterList(novoNome) && !novoNome.equals(nomeAnime)) {
+                        System.out.println("Anime não encontrado na lista principal. Alteração não permitida.");
+                        novoConteudo.append(linha).append("\n"); // Mantenha a linha original
+                        return; // Pule a edição desta linha
+                    } else if (animeExists(novoNome, nomeArquivo) && !novoNome.equals(nomeAnime)) {
                         System.out.println("Nome já existe no arquivo.");
                         novoConteudo.append(linha).append("\n"); // Mantenha a linha original
                         return; // Pule a edição desta linha
                     }
-    
+
                     System.out.println("Informe o novo tipo do anime:");
                     String novoTipo = leitor.nextLine();
-    
+
                     System.out.println("Informe a nova avaliação do anime (entre 0 e 10):");
                     int novaAvaliacao = leitor.nextInt();
                     if (novaAvaliacao < 0 || novaAvaliacao > 10) {
@@ -135,7 +149,7 @@ public class animeController {
                         return; // Pule a edição desta linha
                     }
                     leitor.nextLine(); // Consumir a nova linha
-    
+
                     novoConteudo.append("nome: ").append(novoNome)
                                 .append("; tipo: ").append(novoTipo)
                                 .append("; avaliação: ").append(novaAvaliacao).append("\n");
@@ -143,7 +157,7 @@ public class animeController {
                     novoConteudo.append(linha).append("\n");
                 }
             }
-    
+
             if (encontrado) {
                 FileWriter fw = new FileWriter(arquivo);
                 fw.write(novoConteudo.toString());
