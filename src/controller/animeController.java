@@ -3,6 +3,7 @@ package controller;
 import java.io.*;
 import java.util.Scanner;
 import entities.Anime;
+import java.util.Locale;
 
 public class animeController {
     private static Scanner leitor = new Scanner(System.in);
@@ -95,19 +96,21 @@ public class animeController {
 
     public static void registrarAnimes(Anime anime) {
         System.out.println("Informe o nome do anime:");
-        String nome = leitor.nextLine();
-
+        String nome = leitor.nextLine().toLowerCase(Locale.ROOT);
+        nome = capitalizeEachWord(nome);
+    
         System.out.println("Informe o tipo do anime:");
-        String tipo = leitor.nextLine();
-
+        String tipo = leitor.nextLine().toLowerCase(Locale.ROOT);
+        tipo = capitalizeEachWord(tipo);
+    
         System.out.println("Informe a avaliação do anime (entre 0 e 10):");
         int avaliacao = leitor.nextInt();
         leitor.nextLine(); // Consumir a nova linha
-
+    
         anime.setNome(nome);
         anime.setTipo(tipo);
         anime.setAvaliacao(avaliacao);
-    } 
+    }
 
     public static void alterarAnime(String nomeArquivo, String nomeAnime) {
         BufferedReader br = null;
@@ -118,16 +121,17 @@ public class animeController {
             String linha;
             StringBuilder novoConteudo = new StringBuilder();
             boolean encontrado = false;
-
+    
             while ((linha = br.readLine()) != null) {
                 if (linha.contains("nome: " + nomeAnime + ";")) {
                     encontrado = true;
-
+    
                     System.out.println("Anime encontrado. Informe os novos dados.");
-
+    
                     System.out.println("Informe o novo nome do anime:");
-                    String novoNome = leitor.nextLine();
-
+                    String novoNome = leitor.nextLine().toLowerCase(Locale.ROOT);
+                    novoNome = capitalizeEachWord(novoNome);
+    
                     if (!animeExistsInMasterList(novoNome) && !novoNome.equals(nomeAnime)) {
                         System.out.println("Anime não encontrado na lista principal. Alteração não permitida.");
                         novoConteudo.append(linha).append("\n"); // Mantenha a linha original
@@ -137,10 +141,11 @@ public class animeController {
                         novoConteudo.append(linha).append("\n"); // Mantenha a linha original
                         return; // Pule a edição desta linha
                     }
-
+    
                     System.out.println("Informe o novo tipo do anime:");
-                    String novoTipo = leitor.nextLine();
-
+                    String novoTipo = leitor.nextLine().toLowerCase(Locale.ROOT);
+                    novoTipo = capitalizeEachWord(novoTipo);
+    
                     System.out.println("Informe a nova avaliação do anime (entre 0 e 10):");
                     int novaAvaliacao = leitor.nextInt();
                     if (novaAvaliacao < 0 || novaAvaliacao > 10) {
@@ -149,7 +154,7 @@ public class animeController {
                         return; // Pule a edição desta linha
                     }
                     leitor.nextLine(); // Consumir a nova linha
-
+    
                     novoConteudo.append("nome: ").append(novoNome)
                                 .append("; tipo: ").append(novoTipo)
                                 .append("; avaliação: ").append(novaAvaliacao).append("\n");
@@ -157,7 +162,7 @@ public class animeController {
                     novoConteudo.append(linha).append("\n");
                 }
             }
-
+    
             if (encontrado) {
                 FileWriter fw = new FileWriter(arquivo);
                 fw.write(novoConteudo.toString());
@@ -178,7 +183,7 @@ public class animeController {
                 System.err.println("Erro ao fechar o BufferedReader: " + e.getMessage());
             }
         }
-    }    
+    }
 
     public static void recomendarAnimes(String nomeArquivo) {
         try {
@@ -212,5 +217,17 @@ public class animeController {
             leitor.close();
             //System.out.println("Scanner fechado.");
         }
+    }
+
+    
+    private static String capitalizeEachWord(String str) {
+        String[] words = str.split("\\s");
+        StringBuilder capitalized = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                capitalized.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1)).append(" ");
+            }
+        }
+        return capitalized.toString().trim();
     }
 }

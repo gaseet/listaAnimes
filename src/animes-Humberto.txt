@@ -1,1 +1,1 @@
-nome: teste123; tipo: acao; avaliação: 10
+nome: One Piece; tipo: Acao; avaliação: 10

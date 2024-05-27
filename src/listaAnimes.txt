@@ -1,1 +1,3 @@
-nome: teste123; tipo: 123; avaliação: 10
+nome: Teste; tipo: Acao; avaliação: 10
+nome: One Piece; tipo: Aventura; avaliação: 10
+nome: Dragon Ball Z; tipo: Luta; avaliação: 10
